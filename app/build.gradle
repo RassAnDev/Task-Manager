@@ -40,7 +40,7 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-security',
             'io.jsonwebtoken:jjwt:0.9.1',
             // Зависимость для swagger
-            // Позволяет сгенерировать и проматривать интерактивную документацию по API
+            // Позволяет сгенерировать и просматривать интерактивную документацию по API
             'org.springdoc:springdoc-openapi-ui:1.7.0',
             'org.liquibase:liquibase-core',
             'com.querydsl:querydsl-jpa:5.0.0:jakarta',
@@ -103,7 +103,7 @@ liquibase {
             // Это база данных, изначально она пустая
             url 'jdbc:h2:./taskManager'
             // Сравниваем с моделями, задавая пакет
-            referenceUrl 'hibernate:spring:io.hexlet.javaspringblog.model.' +
+            referenceUrl 'hibernate:spring:hexlet.code.model.' +
                     // Указываем диалект
                     '?dialect=org.hibernate.dialect.H2Dialect' +
                     // Указываем правила именования таблиц и столбцов,
