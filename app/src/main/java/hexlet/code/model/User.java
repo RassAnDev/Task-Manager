@@ -37,6 +37,7 @@ public class User {
     private String email;
 
     @JsonIgnore
+    @Size(min = 3, max = 50, message = "Пароль должен быть от 3 до 50 символов")
     private String password;
 
     private Date createdAt;
