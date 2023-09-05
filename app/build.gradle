@@ -4,7 +4,9 @@ plugins {
     id 'io.freefair.lombok' version '8.2.2'
     id 'org.springframework.boot' version '3.1.3'
     id 'io.spring.dependency-management' version '1.1.3'
-    id 'com.github.ben-manes.versions' version "0.47.0"
+    id 'com.github.ben-manes.versions' version '0.47.0'
+    id 'com.adarshr.test-logger' version '3.2.0'
+    id 'org.liquibase.gradle' version '2.2.0'
     id 'jacoco'
 }
 
@@ -15,52 +17,99 @@ application {
     mainClass = 'hexlet.code.AppApplication'
 }
 
-compileJava {
-    options.release = 20
-    options.encoding = 'UTF-8'
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    compileOnly 'org.projectlombok:lombok'
 
-    implementation 'org.springframework.security:spring-security-test'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    annotationProcessor(
+            'org.projectlombok:lombok',
+            'com.querydsl:querydsl-apt:5.0.0:jakarta',
+            'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    )
 
-    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    implementation(
 
+            'org.springframework.boot:spring-boot-starter-data-jpa',
+            'org.springframework.boot:spring-boot-starter-web',
+            'org.springframework.boot:spring-boot-starter-actuator',
+            'org.springframework.boot:spring-boot-starter-validation',
+            'org.springframework.boot:spring-boot-starter-security',
+            'io.jsonwebtoken:jjwt:0.9.1',
+            // Зависимость для swagger
+            // Позволяет сгенерировать и проматривать интерактивную документацию по API
+            'org.springdoc:springdoc-openapi-ui:1.7.0',
+            'org.liquibase:liquibase-core',
+            'com.querydsl:querydsl-jpa:5.0.0:jakarta',
+            'com.rollbar:rollbar-spring-boot-webmvc:1.10.0'
+    )
 
-    implementation 'org.instancio:instancio-junit:3.2.0'
-    implementation 'net.javacrumbs.json-unit:json-unit-assertj:3.0.0'
-    implementation 'net.datafaker:datafaker:2.0.1'
+    liquibaseRuntime(
+            sourceSets.main.output,
+            'org.liquibase:liquibase-core',
+            'info.picocli:picocli:4.7.1',
+            'org.liquibase.ext:liquibase-hibernate6:4.21.1',
+            'org.springframework.boot:spring-boot-starter-data-jpa',
+            'com.h2database:h2'
+    )
 
-    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:6.28.0'
-    runtimeOnly 'com.h2database:h2:2.2.220'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    runtimeOnly (
+            'com.h2database:h2',
+            'org.postgresql:postgresql:42.6.0'
+    )
+
+    testImplementation(
+            'org.springframework.boot:spring-boot-starter-security',
+            'org.springframework.security:spring-security-test',
+            'org.springframework.boot:spring-boot-starter-test',
+            'com.tobedevoured.modelcitizen:spring:0.8.3'
+    )
+}
+
+wrapper {
+    gradleVersion = '8.2'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+compileJava {
+    options.release = 20
+    options.encoding = 'UTF-8'
 }
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
 }
 
-jacocoTestReport {
-    reports {
-        xml.required = true
+checkstyle {
+    toolVersion '10.12.1'
+}
+
+// Настраиваем таску diffChangeLog таким образом,
+// чтобы миграции учитывали изменения в моделях
+diffChangelog {
+    dependsOn compileJava
+}
+
+// Настраиваем Liquibase
+liquibase {
+    activities {
+        main {
+            // Указываем путь, по которому будет сгенерирован файл миграции
+            changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+            // Указывем источник, с которым будут сравниваться изменения
+            // Это база данных, изначально она пустая
+            url 'jdbc:h2:./taskManager'
+            // Сравниваем с моделями, задавая пакет
+            referenceUrl 'hibernate:spring:io.hexlet.javaspringblog.model.' +
+                    // Указываем диалект
+                    '?dialect=org.hibernate.dialect.H2Dialect' +
+                    // Указываем правила именования таблиц и столбцов,
+                    // чтобы они соответствовали правилам Spring
+                    '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
+        }
     }
 }
 
