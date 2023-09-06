@@ -1,40 +1,40 @@
 setup:
-	make -C app setup
+	./gradlew wrapper --gradle-version 8.2
 
 clean:
-	make -C app clean
+	./gradlew clean
 
 build:
-	make -C app build
+	./gradlew clean build
 
 start:
-	make -C app start
+	./gradlew bootRun --args='--spring.profiles.active=dev'
 
 start-prod:
-	make -C app start-prod
+	./gradlew bootRun --args='--spring.profiles.active=prod'
 
 install:
-	make -C app install
+	./gradlew installDist
 
 start-dist:
-	make -C app start-dist
+	./build/install/app/bin/app
 
 lint:
-	make -C app lint
+	./gradlew checkstyleMain checkstyleTest
 
 test:
-	make -C app test
+	./gradlew test
 
 report:
-	make -C app report
+	./gradlew jacocoTestReport
 
 check-updates:
-	make -C app check-updates
+	./gradlew dependencyUpdates
 
 generate-migrations:
-	make -C app generate-migrations
+	gradle diffChangeLog
 
 db-migrate:
-	make -C app db-migrate
+	./gradlew update
 
 .PHONY: build
