@@ -37,7 +37,7 @@ public class TestUtils {
         return testDtoForRegistration;
     }
 
-    @Autowired(required = true)
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
