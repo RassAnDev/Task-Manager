@@ -81,6 +81,19 @@ public class UserControllerIT {
     }
 
     @Test
+    public void loginFail() throws Exception {
+        final LoginDto loginDto = new LoginDto(
+                utils.getTestDtoForRegistration().getEmail(),
+                utils.getTestDtoForRegistration().getPassword()
+        );
+
+        final MockHttpServletRequestBuilder loginRequest = post(LOGIN).content(asJson(loginDto))
+                .contentType(APPLICATION_JSON);
+
+        utils.perform(loginRequest).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void twiceRegTheSameUserFail() throws Exception {
         utils.regDefaultUser().andExpect(status().isCreated());
         utils.regDefaultUser().andExpect(status().isUnprocessableEntity());
@@ -106,6 +119,18 @@ public class UserControllerIT {
         assertEquals(expectedUser.getEmail(), user.getEmail());
         assertEquals(expectedUser.getFirstName(), user.getFirstName());
         assertEquals(expectedUser.getLastName(), user.getLastName());
+    }
+
+    @Test
+    public void getUserByIdFail() throws Exception {
+        utils.regDefaultUser();
+        final User expectedUser = userRepository.findAll().get(0);
+
+       utils.perform(
+               get(USER_CONTROLLER_PATH + ID, expectedUser.getId() + 1),
+                       expectedUser.getEmail()
+               )
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -146,6 +171,26 @@ public class UserControllerIT {
     }
 
     @Test
+    public void updateUserFail() throws Exception {
+        utils.regDefaultUser();
+
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+
+        final UserDto userDto = new UserDto(
+                TEST_USERNAME_2,
+                "",
+                "",
+                ""
+        );
+
+        final MockHttpServletRequestBuilder updatedRequest = put(USER_CONTROLLER_PATH + ID, userId)
+                .content(asJson(userDto))
+                .contentType(APPLICATION_JSON);
+
+        utils.perform(updatedRequest, TEST_USERNAME).andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     public void deleteUser() throws Exception {
         utils.regDefaultUser();
 
@@ -155,5 +200,15 @@ public class UserControllerIT {
                 .andExpect(status().isOk());
 
         assertEquals(0, userRepository.count());
+    }
+
+    @Test
+    public void deleteUserFail() throws Exception {
+        utils.regDefaultUser();
+
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+
+        utils.perform(delete(USER_CONTROLLER_PATH + ID, userId), TEST_USERNAME_2)
+                .andExpect(status().isForbidden());
     }
 }
