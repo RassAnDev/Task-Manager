@@ -1,18 +1,31 @@
 package hexlet.code.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
 
-    private String firstName;
-    private String lastName;
+    @NotBlank
+    @Email
     private String email;
+
+    @NotBlank
+    @Size(min = 1, message = "Имя должно быть не менее 1 символа")
+    private String firstName;
+
+    @NotBlank
+    @Size(min = 1, message = "Фамилия должна быть не менее 1 символа")
+    private String lastName;
+
+    @NotBlank
+    @Size(min = 3, max = 50, message = "Пароль должен быть от 3 до 50 символов")
     private String password;
-    private Date createdAt;
 
 }
