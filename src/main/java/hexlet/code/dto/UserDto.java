@@ -25,7 +25,7 @@ public class UserDto {
     private String lastName;
 
     @NotBlank
-    @Size(min = 3, max = 50, message = "Пароль должен быть от 3 до 50 символов")
+    @Size(min = 3, max = 255, message = "Пароль должен быть от 3 до 255 символов")
     private String password;
 
 }
