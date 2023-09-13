@@ -1,4 +1,4 @@
-package hexlet.code.controllers;
+package hexlet.code.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WelcomeController {
 
     @GetMapping("")
-    public final String root() {
+    public String root() {
         return "Welcome to Spring";
     }
 }
