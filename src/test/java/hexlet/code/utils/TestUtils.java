@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.component.JWTHelper;
+import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.util.Map;
 
+import static hexlet.code.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
 import static hexlet.code.controller.UserController.USER_CONTROLLER_PATH;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -26,12 +29,16 @@ public class TestUtils {
     public static final String TEST_USERNAME = "kaermorhen@gmail.com";
     public static final String TEST_USERNAME_2 = "vengerberg@gmail.com";
 
+    public static final String TEST_TASK_STATUS_NAME = "looking for orders";
+
     private final UserDto testDtoForRegistration = new UserDto(
             TEST_USERNAME,
             "Geralt",
             "from Rivia",
             "yennefer"
     );
+
+    private final TaskStatusDto testDtoForTaskStatus = new TaskStatusDto(TEST_TASK_STATUS_NAME);
 
     public UserDto getTestDtoForRegistration() {
         return testDtoForRegistration;
@@ -44,11 +51,15 @@ public class TestUtils {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
     private JWTHelper jwtHelper;
 
 
     public void tearDown() {
         userRepository.deleteAll();
+        taskStatusRepository.deleteAll();
     }
 
     public User getUserByEmail(final String email) {
@@ -59,12 +70,24 @@ public class TestUtils {
         return regUser(testDtoForRegistration);
     }
 
+    public ResultActions createDefaultTaskStatus() throws Exception {
+        return createTaskStatus(testDtoForTaskStatus);
+    }
+
     public ResultActions regUser(final UserDto dto) throws Exception {
         final MockHttpServletRequestBuilder request = post(USER_CONTROLLER_PATH)
                 .content(asJson(dto))
                 .contentType(APPLICATION_JSON);
 
         return perform(request);
+    }
+
+    public ResultActions createTaskStatus(final TaskStatusDto dto) throws Exception {
+        final MockHttpServletRequestBuilder request = post(TASK_STATUS_CONTROLLER_PATH)
+                .content(asJson(dto))
+                .contentType(APPLICATION_JSON);
+
+        return perform(request, TEST_USERNAME);
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request, final String byUser) throws Exception {
