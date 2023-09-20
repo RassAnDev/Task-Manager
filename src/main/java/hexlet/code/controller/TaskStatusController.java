@@ -39,9 +39,9 @@ public class TaskStatusController {
     @Operation(summary = "Create a new task status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task status created",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class))),
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "422", description = "Cannot create task status with this data",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class)))
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class)))
     })
     @PostMapping()
     @ResponseStatus(CREATED)
@@ -51,7 +51,7 @@ public class TaskStatusController {
 
     @Operation(summary = "Get all task statuses")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Task status found",
+            @ApiResponse(responseCode = "200", description = "Task statuses found",
             content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "404", description = "Task statuses not found",
             content = @Content(schema = @Schema(implementation = TaskStatus.class)))
@@ -64,9 +64,9 @@ public class TaskStatusController {
     @Operation(summary = "Get task status by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status found",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class))),
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "404", description = "Task status not found",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class)))
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class)))
     })
     @GetMapping(ID)
     public TaskStatus getTaskStatusById(@PathVariable final Long id) {
@@ -76,11 +76,11 @@ public class TaskStatusController {
     @Operation(summary = "Update task status by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status updated",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class))),
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "422", description = "Cannot update task status with this data",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class))),
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "404", description = "Task status not found",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class)))
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class)))
     })
     @PutMapping(ID)
     public TaskStatus updateTaskStatus(
@@ -93,9 +93,9 @@ public class TaskStatusController {
     @Operation(summary = "Delete task status by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status deleted",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class))),
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class))),
             @ApiResponse(responseCode = "404", description = "Task status not found",
-            content = @Content(schema = @Schema(implementation = TaskStatus.class)))
+                    content = @Content(schema = @Schema(implementation = TaskStatus.class)))
     })
     @DeleteMapping(ID)
     public void deleteTaskStatus(@PathVariable final Long id) {

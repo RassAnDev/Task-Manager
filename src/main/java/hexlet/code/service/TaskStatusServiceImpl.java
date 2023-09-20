@@ -3,7 +3,7 @@ package hexlet.code.service;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusRepository taskStatusRepository;
 
-    public TaskStatus getTaskStatusById(Long id) {
+    public TaskStatus getTaskStatusById(final Long id) {
         return taskStatusRepository.findById(id).orElseThrow();
     }
 
@@ -24,21 +24,21 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         return taskStatusRepository.findAll();
     };
 
-    public TaskStatus createNewTaskStatus(TaskStatusDto taskStatusDto) {
+    public TaskStatus createNewTaskStatus(final TaskStatusDto taskStatusDto) {
         final TaskStatus newTaskStatus = fromDto(taskStatusDto);
 
         return taskStatusRepository.save(newTaskStatus);
     }
 
-    public TaskStatus updateTaskStatus(Long id, TaskStatusDto taskStatusDto) {
-        TaskStatus taskStatusForUpdate = taskStatusRepository.findById(id).orElseThrow();
-        taskStatusForUpdate.setName(fromDto(taskStatusDto).getName());
+    public TaskStatus updateTaskStatus(final Long id, final TaskStatusDto taskStatusDto) {
+        final TaskStatus taskStatusForUpdate = taskStatusRepository.findById(id).get();
+        taskStatusForUpdate.setName(taskStatusDto.getName());
 
         return taskStatusRepository.save(taskStatusForUpdate);
     }
 
-    public void deleteTaskStatus(Long id) {
-        TaskStatus taskStatusForDelete = taskStatusRepository.findById(id).orElseThrow();
+    public void deleteTaskStatus(final Long id) {
+        final TaskStatus taskStatusForDelete = taskStatusRepository.findById(id).orElseThrow();
 
         taskStatusRepository.delete(taskStatusForDelete);
     }

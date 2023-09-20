@@ -3,7 +3,7 @@ package hexlet.code.service;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User getUserById(Long id) {
+    public User getUserById(final Long id) {
         return userRepository.findById(id).orElseThrow();
     }
 
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream().toList();
     }
 
-    public User createNewUser(UserDto userDto) {
+    public User createNewUser(final UserDto userDto) {
         final User newUser = new User();
         newUser.setEmail(userDto.getEmail());
         newUser.setFirstName(userDto.getFirstName());
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(newUser);
     }
 
-    public User updateUser(Long id, UserDto userDto) {
+    public User updateUser(final Long id, final UserDto userDto) {
         final User userForUpdate = userRepository.findById(id).orElseThrow();
         userForUpdate.setEmail(userDto.getEmail());
         userForUpdate.setFirstName(userDto.getFirstName());
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(userForUpdate);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(final Long id) {
         final User userForDelete = userRepository.findById(id).orElseThrow();
         userRepository.delete(userForDelete);
     }

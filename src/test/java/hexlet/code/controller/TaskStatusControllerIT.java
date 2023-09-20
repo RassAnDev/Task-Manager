@@ -7,6 +7,7 @@ import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,11 @@ public class TaskStatusControllerIT {
     @Autowired
     private TestUtils utils;
 
+    @BeforeEach
+    public void before() throws Exception {
+        utils.regDefaultUser();
+    }
+
     @AfterEach
     public void clear() {
         utils.tearDown();
@@ -58,8 +64,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void createTaskStatus() throws Exception {
-        utils.regDefaultUser();
-
         assertEquals(0, taskStatusRepository.count());
         utils.createDefaultTaskStatus().andExpect(status().isCreated());
         assertEquals(1, taskStatusRepository.count());
@@ -86,7 +90,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void getTaskStatusById() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
         final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
@@ -106,7 +109,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void getTaskStatusByIdFail() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
         final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
@@ -120,10 +122,11 @@ public class TaskStatusControllerIT {
 
     @Test
     public void getAllTaskStatuses() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
-        final MockHttpServletResponse response = utils.perform(get(TASK_STATUS_CONTROLLER_PATH), TEST_USERNAME)
+        final MockHttpServletResponse response = utils.perform(get(TASK_STATUS_CONTROLLER_PATH),
+                        TEST_USERNAME
+                )
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -135,7 +138,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void updateTaskStatus() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
         final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
@@ -157,7 +159,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void updateTaskStatusFail() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
         final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
@@ -175,7 +176,6 @@ public class TaskStatusControllerIT {
 
     @Test
     public void deleteTaskStatus() throws Exception {
-        utils.regDefaultUser();
         utils.createDefaultTaskStatus();
 
         final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
