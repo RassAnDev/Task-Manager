@@ -5,10 +5,9 @@ import hexlet.code.config.SpringConfigForIT;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Task;
 import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,11 @@ import java.util.List;
 import static hexlet.code.config.SpringConfigForIT.TEST_PROFILE;
 import static hexlet.code.controller.TaskController.ID;
 import static hexlet.code.controller.TaskController.TASK_CONTROLLER_PATH;
-import static hexlet.code.utils.TestUtils.*;
+import static hexlet.code.utils.TestUtils.TEST_TASK_NAME;
+import static hexlet.code.utils.TestUtils.TEST_USERNAME;
+import static hexlet.code.utils.TestUtils.TEST_USERNAME_2;
+import static hexlet.code.utils.TestUtils.asJson;
+import static hexlet.code.utils.TestUtils.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -45,11 +48,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TaskControllerIT {
 
     @Autowired
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
 
     @Autowired
-    TestUtils utils;
+    private TestUtils utils;
 
+    @BeforeEach
+    public void before() throws Exception {
+        utils.regDefaultUser();
+        utils.createDefaultTaskStatus();
+    }
 
     @AfterEach
     public void clear() {
@@ -100,9 +108,9 @@ public class TaskControllerIT {
         assertEquals(expectedTask.getId(), task.getId());
         assertEquals(expectedTask.getName(), task.getName());
         assertEquals(expectedTask.getDescription(), task.getDescription());
-        assertEquals(expectedTask.getTaskStatus(), task.getTaskStatus());
-        assertEquals(expectedTask.getAuthor(), task.getAuthor());
-        assertEquals(expectedTask.getExecutor(), task.getExecutor());
+        assertEquals(expectedTask.getTaskStatus().getName(), task.getTaskStatus().getName());
+        assertEquals(expectedTask.getAuthor().getEmail(), task.getAuthor().getEmail());
+        assertEquals(expectedTask.getExecutor().getEmail(), task.getExecutor().getEmail());
     }
 
     @Test
