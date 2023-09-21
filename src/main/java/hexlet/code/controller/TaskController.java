@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,7 @@ public class TaskController {
     public static final String ID = "/{id}";
 
     private static final String ONLY_AUTHOR_BY_ID = """
-            @taskRepository.findById(#id).get().getAuthor() == authentication.getName()
+            @taskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
             """;
 
     private final TaskService taskService;
@@ -89,17 +90,18 @@ public class TaskController {
     })
     @PutMapping(ID)
     public Task updateTask(@PathVariable final Long id, @RequestBody @Valid TaskDto taskDto) {
-        return taskService.updateTask(id , taskDto);
+        return taskService.updateTask(id, taskDto);
     }
 
     @Operation(summary = "Delete task by id")
-    @ApiResponses(value ={
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task deleted",
                     content = @Content(schema = @Schema(implementation = Task.class))),
             @ApiResponse(responseCode = "404", description = "Task not found",
                     content = @Content(schema = @Schema(implementation = Task.class)))
     })
     @DeleteMapping(ID)
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     public void deleteTask(@PathVariable final Long id) {
         taskService.deleteTask(id);
     }
