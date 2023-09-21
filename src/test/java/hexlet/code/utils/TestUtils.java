@@ -65,9 +65,9 @@ public class TestUtils {
 
 
     public void tearDown() {
-        userRepository.deleteAll();
-        taskStatusRepository.deleteAll();
         taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     public UserDto getTestDtoForRegistration() {
@@ -79,10 +79,8 @@ public class TestUtils {
     }
 
     private TaskDto buildDefaultTaskDto() throws Exception {
-        regDefaultUser();
         final User user = userRepository.findByEmail(TEST_USERNAME).get();
 
-        createDefaultTaskStatus();
         final TaskStatus taskStatus = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get();
 
         final TaskDto taskDto = new TaskDto();
@@ -90,7 +88,7 @@ public class TestUtils {
         taskDto.setDescription(TEST_TASK_DESCRIPTION);
         taskDto.setTaskStatusId(taskStatus.getId());
         taskDto.setAuthorId(user.getId());
-        //taskDto.setExecutorId(user.getId());
+        taskDto.setExecutorId(user.getId());
 
         return taskDto;
     }
