@@ -64,7 +64,7 @@ public class TaskServiceImpl implements TaskService {
         final Task task = new Task();
 
         final User author = userService.getCurrentUser();
-        final User executor = userService.getUserById(taskDto.getExecutorId());
+        final Long executorId = taskDto.getExecutorId();
         final TaskStatus taskStatus = taskStatusService.getTaskStatusById(taskDto.getTaskStatusId());
 
         task.setName(taskDto.getName());
@@ -72,8 +72,8 @@ public class TaskServiceImpl implements TaskService {
         task.setAuthor(author);
         task.setTaskStatus(taskStatus);
 
-        if (executor != null) {
-            task.setExecutor(executor);
+        if (executorId != null) {
+            task.setExecutor(userService.getUserById(executorId));
         }
 
         return task;
