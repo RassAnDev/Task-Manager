@@ -49,7 +49,7 @@ public class TaskController {
             @ApiResponse(responseCode = "422", description = "Cannot create task with this data",
                     content = @Content(schema = @Schema(implementation = Task.class)))
     })
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(CREATED)
     public Task createNew(@RequestBody @Valid final TaskDto taskDto) {
         return taskService.createNewTask(taskDto);
@@ -89,7 +89,7 @@ public class TaskController {
                     content = @Content(schema = @Schema(implementation = Task.class)))
     })
     @PutMapping(ID)
-    public Task updateTask(@PathVariable final Long id, @RequestBody @Valid TaskDto taskDto) {
+    public Task updateTask(@PathVariable final Long id, @RequestBody @Valid final TaskDto taskDto) {
         return taskService.updateTask(id, taskDto);
     }
 
