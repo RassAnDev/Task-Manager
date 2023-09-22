@@ -147,6 +147,40 @@ public class TaskControllerIT {
     }
 
     @Test
+    public void getSortedAllTasks() throws Exception {
+        utils.createDefaultTask();
+
+        final Task expectedTask = taskRepository.findAll().get(0);
+        final Long expectedLabelId = expectedTask.getLabels().stream().findFirst().get().getId();
+
+        final String queryString = String.format("?taskStatus=%d&executorId=%d&authorId=%d&labelsId=%d",
+                expectedTask.getTaskStatus().getId(),
+                expectedTask.getExecutor().getId(),
+                expectedTask.getAuthor().getId(),
+                expectedLabelId);
+
+        final MockHttpServletResponse response = utils.perform(
+                get(TASK_CONTROLLER_PATH + queryString),
+                        TEST_USERNAME
+                )
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        final List<Task> tasks = fromJson(response.getContentAsString(), new TypeReference<>() { });
+
+        final Task currentTask = tasks.get(0);
+        final Long currentLabelId = currentTask.getLabels().stream().findFirst().get().getId();
+
+        assertThat(tasks).hasSize(1);
+        assertEquals(expectedTask.getName(), currentTask.getName());
+        assertEquals(expectedTask.getTaskStatus().getName(), currentTask.getTaskStatus().getName());
+        assertEquals(expectedTask.getExecutor().getEmail(), currentTask.getExecutor().getEmail());
+        assertEquals(expectedTask.getAuthor().getFirstName(), currentTask.getAuthor().getFirstName());
+        assertEquals(expectedLabelId, currentLabelId);
+    }
+
+    @Test
     public void updateTask() throws Exception {
         utils.createDefaultTask();
 
