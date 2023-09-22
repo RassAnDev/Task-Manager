@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.config.SpringConfigForIT;
 import hexlet.code.dto.TaskDto;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.utils.TestUtils;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 import static hexlet.code.config.SpringConfigForIT.TEST_PROFILE;
 import static hexlet.code.controller.TaskController.ID;
@@ -57,6 +59,7 @@ public class TaskControllerIT {
     public void before() throws Exception {
         utils.regDefaultUser();
         utils.createDefaultTaskStatus();
+        utils.createDefaultLabel();
     }
 
     @AfterEach
@@ -119,7 +122,8 @@ public class TaskControllerIT {
 
         final Task expectedTask = taskRepository.findAll().get(0);
 
-        utils.perform(get(TASK_CONTROLLER_PATH + ID, expectedTask.getId() + 1),
+        utils.perform(
+                get(TASK_CONTROLLER_PATH + ID, expectedTask.getId() + 1),
                 TEST_USERNAME
                 )
                 .andExpect(status().isNotFound());
@@ -129,7 +133,8 @@ public class TaskControllerIT {
     public void getAllTasks() throws Exception {
         utils.createDefaultTask();
 
-        final MockHttpServletResponse response = utils.perform(get(TASK_CONTROLLER_PATH),
+        final MockHttpServletResponse response = utils.perform(
+                get(TASK_CONTROLLER_PATH),
                         TEST_USERNAME
                 )
                 .andExpect(status().isOk())
@@ -205,6 +210,7 @@ public class TaskControllerIT {
     private static TaskDto buildTaskDtoForUpdate(Task task) {
         final String updatedTaskName = "relax";
         final String updatedTaskDescription = "need to find a place to sleep";
+        final Label label = task.getLabels().stream().findFirst().get();
 
         final TaskDto taskDtoForUpdate = new TaskDto();
         taskDtoForUpdate.setName(updatedTaskName);
@@ -212,6 +218,7 @@ public class TaskControllerIT {
         taskDtoForUpdate.setTaskStatusId(task.getTaskStatus().getId());
         taskDtoForUpdate.setAuthorId(task.getAuthor().getId());
         taskDtoForUpdate.setExecutorId(task.getExecutor().getId());
+        taskDtoForUpdate.setLabelIds(Set.of(label.getId()));
 
         return taskDtoForUpdate;
     }
