@@ -1,6 +1,7 @@
 package hexlet.code.service;
 
 import hexlet.code.dto.TaskDto;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,6 +25,8 @@ public class TaskServiceImpl implements TaskService {
     private final UserService userService;
 
     private final TaskStatusService taskStatusService;
+
+    private final LabelService labelService;
 
     public Task getTaskById(final Long id) {
         return taskRepository.findById(id).orElseThrow();
@@ -64,8 +70,14 @@ public class TaskServiceImpl implements TaskService {
         final Task task = new Task();
 
         final User author = userService.getCurrentUser();
+
         final Long executorId = taskDto.getExecutorId();
+
         final TaskStatus taskStatus = taskStatusService.getTaskStatusById(taskDto.getTaskStatusId());
+
+        final Set<Long> labelIds = taskDto.getLabelIds().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
@@ -74,6 +86,14 @@ public class TaskServiceImpl implements TaskService {
 
         if (executorId != null) {
             task.setExecutor(userService.getUserById(executorId));
+        }
+
+        if (!labelIds.isEmpty()) {
+            Set<Label> labels = labelIds.stream()
+                    .map(labelService::getLabelById)
+                    .collect(Collectors.toSet());
+
+            task.setLabels(labels);
         }
 
         return task;
