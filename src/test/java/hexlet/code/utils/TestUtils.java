@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.component.JWTHelper;
+import hexlet.code.dto.LabelDto;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.dto.UserDto;
+import hexlet.code.model.Label;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -19,7 +22,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Map;
+import java.util.Set;
 
+import static hexlet.code.controller.LabelController.LABEL_CONTROLLER_PATH;
 import static hexlet.code.controller.TaskController.TASK_CONTROLLER_PATH;
 import static hexlet.code.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
 import static hexlet.code.controller.UserController.USER_CONTROLLER_PATH;
@@ -39,6 +44,10 @@ public class TestUtils {
 
     public static final String TEST_TASK_STATUS_NAME = "looking for orders";
 
+    public static final String TEST_LABEL_NAME = "in progress";
+
+    public static final String TEST_LABEL_NAME_2 = "deferred";
+
     private final UserDto testDtoForRegistration = new UserDto(
             TEST_USERNAME,
             "Geralt",
@@ -47,6 +56,8 @@ public class TestUtils {
     );
 
     private final TaskStatusDto testDtoForTaskStatus = new TaskStatusDto(TEST_TASK_STATUS_NAME);
+
+    private final LabelDto testDtoForLabel = new LabelDto(TEST_LABEL_NAME);
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,12 +72,16 @@ public class TestUtils {
     private TaskStatusRepository taskStatusRepository;
 
     @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
     private JWTHelper jwtHelper;
 
 
     public void tearDown() {
         taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
+        labelRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -78,10 +93,12 @@ public class TestUtils {
         return userRepository.findByEmail(email).get();
     }
 
-    private TaskDto buildDefaultTaskDto() throws Exception {
+    private TaskDto buildDefaultTaskDto() {
         final User user = userRepository.findByEmail(TEST_USERNAME).get();
 
         final TaskStatus taskStatus = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get();
+
+        final Label label = labelRepository.findByName(TEST_LABEL_NAME).get();
 
         final TaskDto taskDto = new TaskDto();
         taskDto.setName(TEST_TASK_NAME);
@@ -89,6 +106,7 @@ public class TestUtils {
         taskDto.setTaskStatusId(taskStatus.getId());
         taskDto.setAuthorId(user.getId());
         taskDto.setExecutorId(user.getId());
+        taskDto.setLabelIds(Set.of(label.getId()));
 
         return taskDto;
     }
@@ -103,6 +121,10 @@ public class TestUtils {
 
     public ResultActions createDefaultTaskStatus() throws Exception {
         return createTaskStatus(testDtoForTaskStatus);
+    }
+
+    public ResultActions createDefaultLabel() throws Exception {
+        return createLabel(testDtoForLabel);
     }
 
     public ResultActions regUser(final UserDto userDto) throws Exception {
@@ -125,6 +147,14 @@ public class TestUtils {
     public ResultActions createTaskStatus(final TaskStatusDto taskStatusDto) throws Exception {
         final MockHttpServletRequestBuilder request = post(TASK_STATUS_CONTROLLER_PATH)
                 .content(asJson(taskStatusDto))
+                .contentType(APPLICATION_JSON);
+
+        return perform(request, TEST_USERNAME);
+    }
+
+    public ResultActions createLabel(final LabelDto labelDto) throws Exception {
+        final MockHttpServletRequestBuilder request = post(LABEL_CONTROLLER_PATH)
+                .content(asJson(labelDto))
                 .contentType(APPLICATION_JSON);
 
         return perform(request, TEST_USERNAME);
