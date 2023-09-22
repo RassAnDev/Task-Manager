@@ -2,9 +2,11 @@ package hexlet.code.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -20,6 +22,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -51,6 +54,9 @@ public class Task {
 
     @ManyToOne
     private User executor;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Label> labels;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
