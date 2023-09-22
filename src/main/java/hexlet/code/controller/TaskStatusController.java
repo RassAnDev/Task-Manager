@@ -43,7 +43,7 @@ public class TaskStatusController {
             @ApiResponse(responseCode = "422", description = "Cannot create task status with this data",
                     content = @Content(schema = @Schema(implementation = TaskStatus.class)))
     })
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(CREATED)
     public TaskStatus createNew(@RequestBody @Valid final TaskStatusDto taskStatusDto) {
         return taskStatusService.createNewTaskStatus(taskStatusDto);
