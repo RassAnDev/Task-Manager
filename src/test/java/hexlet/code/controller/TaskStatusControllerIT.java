@@ -124,7 +124,8 @@ public class TaskStatusControllerIT {
     public void getAllTaskStatuses() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final MockHttpServletResponse response = utils.perform(get(TASK_STATUS_CONTROLLER_PATH),
+        final MockHttpServletResponse response = utils.perform(
+                get(TASK_STATUS_CONTROLLER_PATH),
                         TEST_USERNAME
                 )
                 .andExpect(status().isOk())
@@ -188,9 +189,7 @@ public class TaskStatusControllerIT {
 
     @Test
     public void deleteTaskStatusFail() throws Exception {
-        final TaskStatus taskStatus = new TaskStatus();
-        taskStatus.setName(TEST_TASK_STATUS_NAME);
-        taskStatusRepository.save(taskStatus);
+        utils.createDefaultTaskStatus();
 
         final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
 
