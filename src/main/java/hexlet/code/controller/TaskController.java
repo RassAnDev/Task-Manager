@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Task;
 import hexlet.code.service.TaskService;
@@ -63,8 +64,8 @@ public class TaskController {
                     content = @Content(schema = @Schema(implementation = Task.class)))
     })
     @GetMapping
-    public List<Task> getAll() {
-        return taskService.getAllTasks();
+    public List<Task> getAll(Predicate predicate) {
+        return taskService.getAllTasks(predicate);
     }
 
     @Operation(summary = "Get task by id")
