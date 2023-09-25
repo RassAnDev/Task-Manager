@@ -2,9 +2,9 @@ server:
   error:
     include-stacktrace: on_param
 
-#springdoc:
-#  swagger-ui:
-#    path: /swagger-ui.html
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 
 spring:
   datasource:
