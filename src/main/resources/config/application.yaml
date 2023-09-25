@@ -19,3 +19,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+rollbar_token: af20d6c6a0c541c5a07b3c8b20a4ab1a
