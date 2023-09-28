@@ -30,9 +30,8 @@ import static hexlet.code.utils.TestUtils.asJson;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -63,6 +62,7 @@ public class UserControllerIT {
         assertEquals(0, userRepository.count());
         utils.regDefaultUser().andExpect(status().isCreated());
         assertEquals(1, userRepository.count());
+        assertEquals(userRepository.findAll().get(0).getEmail(), TEST_USERNAME);
     }
 
     @Test
@@ -142,8 +142,10 @@ public class UserControllerIT {
                 .getResponse();
 
         final List<User> users = fromJson(response.getContentAsString(), new TypeReference<>() { });
+        final List<User> expectedUsers = userRepository.findAll();
 
         assertThat(users).hasSize(1);
+        assertThat(users.get(0).getEmail()).isEqualTo(expectedUsers.get(0).getEmail());
     }
 
     @Test
@@ -165,9 +167,11 @@ public class UserControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        assertTrue(userRepository.existsById(userId));
-        assertNull(userRepository.findByEmail(TEST_USERNAME).orElse(null));
-        assertNotNull(userRepository.findByEmail(TEST_USERNAME_2).orElse(null));
+        final User expectedUser = userRepository.findAll().get(0);
+
+        assertEquals(expectedUser.getId(), userId);
+        assertNotEquals(expectedUser.getEmail(), TEST_USERNAME);
+        assertEquals(expectedUser.getEmail(), TEST_USERNAME_2);
     }
 
     @Test
@@ -200,6 +204,7 @@ public class UserControllerIT {
                 .andExpect(status().isOk());
 
         assertEquals(0, userRepository.count());
+        assertFalse(userRepository.existsById(userId));
     }
 
     @Test

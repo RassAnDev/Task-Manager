@@ -32,9 +32,8 @@ import static hexlet.code.utils.TestUtils.asJson;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,6 +71,7 @@ public class TaskControllerIT {
         assertEquals(0, taskRepository.count());
         utils.createDefaultTask().andExpect(status().isCreated());
         assertEquals(1, taskRepository.count());
+        assertEquals(taskRepository.findAll().get(0).getName(), TEST_TASK_NAME);
     }
 
     @Test
@@ -142,8 +142,10 @@ public class TaskControllerIT {
                 .getResponse();
 
         final List<Task> tasks = fromJson(response.getContentAsString(), new TypeReference<>() { });
+        final List<Task> expectedTasks =  taskRepository.findAll();
 
         assertThat(tasks).hasSize(1);
+        assertThat(tasks.get(0).getName()).isEqualTo(expectedTasks.get(0).getName());
     }
 
     @Test
@@ -196,9 +198,11 @@ public class TaskControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        assertTrue(taskRepository.existsById(taskId));
-        assertNull(taskRepository.findByName(TEST_TASK_NAME).orElse(null));
-        assertNotNull(taskRepository.findByName(taskDtoForUpdate.getName()).orElse(null));
+        final Task expectedTask = taskRepository.findAll().get(0);
+
+        assertEquals(expectedTask.getId(), taskId);
+        assertNotEquals(expectedTask.getName(), TEST_TASK_NAME);
+        assertEquals(expectedTask.getName(), taskDtoForUpdate.getName());
     }
 
     @Test
@@ -229,6 +233,7 @@ public class TaskControllerIT {
                 .andExpect(status().isOk());
 
         assertEquals(0, taskRepository.count());
+        assertFalse(taskRepository.existsById(taskId));
     }
 
     @Test

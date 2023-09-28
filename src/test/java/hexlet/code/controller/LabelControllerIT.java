@@ -30,9 +30,8 @@ import static hexlet.code.utils.TestUtils.asJson;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -68,6 +67,7 @@ public class LabelControllerIT {
         assertEquals(0, labelRepository.count());
         utils.createDefaultLabel().andExpect(status().isCreated());
         assertEquals(1, labelRepository.count());
+        assertEquals(labelRepository.findAll().get(0).getName(), TEST_LABEL_NAME);
     }
 
     @Test
@@ -134,8 +134,10 @@ public class LabelControllerIT {
                 .getResponse();
 
         final List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<>() { });
+        final List<Label> expectedLabels = labelRepository.findAll();
 
         assertThat(labels).hasSize(1);
+        assertThat(labels.get(0).getName()).isEqualTo(expectedLabels.get(0).getName());
     }
 
     @Test
@@ -153,9 +155,11 @@ public class LabelControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        assertTrue(labelRepository.existsById(labelId));
-        assertNull(labelRepository.findByName(TEST_LABEL_NAME).orElse(null));
-        assertNotNull(labelRepository.findByName(TEST_LABEL_NAME_2).orElse(null));
+        final Label expectedLabel = labelRepository.findAll().get(0);
+
+        assertEquals(expectedLabel.getId(), labelId);
+        assertNotEquals(expectedLabel.getName(), TEST_LABEL_NAME);
+        assertEquals(expectedLabel.getName(), TEST_LABEL_NAME_2);
     }
 
     @Test
@@ -184,6 +188,7 @@ public class LabelControllerIT {
                 .andExpect(status().isOk());
 
         assertEquals(0, labelRepository.count());
+        assertFalse(labelRepository.existsById(labelId));
     }
 
     @Test

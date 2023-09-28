@@ -29,9 +29,8 @@ import static hexlet.code.utils.TestUtils.asJson;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,6 +66,7 @@ public class TaskStatusControllerIT {
         assertEquals(0, taskStatusRepository.count());
         utils.createDefaultTaskStatus().andExpect(status().isCreated());
         assertEquals(1, taskStatusRepository.count());
+        assertEquals(taskStatusRepository.findAll().get(0).getName(), TEST_TASK_STATUS_NAME);
     }
 
     @Test
@@ -133,8 +133,10 @@ public class TaskStatusControllerIT {
                 .getResponse();
 
         final List<TaskStatus> taskStatuses = fromJson(response.getContentAsString(), new TypeReference<>() { });
+        final List<TaskStatus> expectedTaskStatuses = taskStatusRepository.findAll();
 
         assertThat(taskStatuses).hasSize(1);
+        assertThat(taskStatuses.get(0).getName()).isEqualTo(expectedTaskStatuses.get(0).getName());
     }
 
     @Test
@@ -153,9 +155,11 @@ public class TaskStatusControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        assertTrue(taskStatusRepository.existsById(taskStatusId));
-        assertNull(taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElse(null));
-        assertNotNull(taskStatusRepository.findByName(taskStatusDtoForUpdate.getName()).orElse(null));
+        final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
+
+        assertEquals(expectedTaskStatus.getId(), taskStatusId);
+        assertNotEquals(expectedTaskStatus.getName(), TEST_TASK_STATUS_NAME);
+        assertEquals(expectedTaskStatus.getName(), taskStatusDtoForUpdate.getName());
     }
 
     @Test
@@ -185,6 +189,7 @@ public class TaskStatusControllerIT {
                 .andExpect(status().isOk());
 
         assertEquals(0, taskStatusRepository.count());
+        assertFalse(taskStatusRepository.existsById(taskStatusId));
     }
 
     @Test
