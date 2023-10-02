@@ -133,7 +133,7 @@ public class UserControllerIT {
         utils.regDefaultUser();
         final User expectedUser = userRepository.findAll().get(0);
 
-       utils.perform(
+        utils.perform(
                get(USER_CONTROLLER_PATH + ID, expectedUser.getId() + 1),
                        expectedUser.getEmail()
                )
