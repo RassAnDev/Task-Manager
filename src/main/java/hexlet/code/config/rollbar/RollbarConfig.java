@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @ComponentScan({
-        "hexlet.code"
+    "hexlet.code"
 })
 public class RollbarConfig {
 
