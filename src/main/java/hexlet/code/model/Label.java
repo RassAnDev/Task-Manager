@@ -12,13 +12,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -27,6 +27,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @Table(name = "labels")
+@EqualsAndHashCode
 public class Label {
 
     @Id
@@ -44,24 +45,5 @@ public class Label {
 
     public Label(final Long id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Label label = (Label) o;
-        return Objects.equals(id, label.id)
-                && Objects.equals(name, label.name)
-                && Objects.equals(createdAt, label.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, createdAt);
     }
 }
