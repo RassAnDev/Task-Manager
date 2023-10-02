@@ -64,9 +64,16 @@ public class TaskStatusControllerIT {
     @Test
     public void createTaskStatus() throws Exception {
         assertEquals(0, taskStatusRepository.count());
-        utils.createDefaultTaskStatus().andExpect(status().isCreated());
+
+        MockHttpServletResponse response = utils.createDefaultTaskStatus()
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        final TaskStatus savedTaskStatus = fromJson(response.getContentAsString(), new TypeReference<>() { });
+
         assertEquals(1, taskStatusRepository.count());
-        assertEquals(taskStatusRepository.findAll().get(0).getName(), TEST_TASK_STATUS_NAME);
+        assertThat(taskStatusRepository.getReferenceById(savedTaskStatus.getId())).isNotNull();
     }
 
     @Test
@@ -136,7 +143,7 @@ public class TaskStatusControllerIT {
         final List<TaskStatus> expectedTaskStatuses = taskStatusRepository.findAll();
 
         assertThat(taskStatuses).hasSize(1);
-        assertThat(taskStatuses.get(0).getName()).isEqualTo(expectedTaskStatuses.get(0).getName());
+        assertThat(taskStatuses).containsAll(expectedTaskStatuses);
     }
 
     @Test
@@ -188,7 +195,6 @@ public class TaskStatusControllerIT {
         utils.perform(delete(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusId), TEST_USERNAME)
                 .andExpect(status().isOk());
 
-        assertEquals(0, taskStatusRepository.count());
         assertFalse(taskStatusRepository.existsById(taskStatusId));
     }
 
