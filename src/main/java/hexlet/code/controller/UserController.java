@@ -41,9 +41,9 @@ public class UserController {
 
     @Operation(summary = "Create a new user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created",
+        @ApiResponse(responseCode = "201", description = "User created",
                     content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "422", description = "Cannot create user with this data",
+        @ApiResponse(responseCode = "422", description = "Cannot create user with this data",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @PostMapping
@@ -54,9 +54,9 @@ public class UserController {
 
     @Operation(summary = "Get all users")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users found",
+        @ApiResponse(responseCode = "200", description = "Users found",
                     content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "404", description = "Users not found",
+        @ApiResponse(responseCode = "404", description = "Users not found",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @GetMapping
@@ -66,9 +66,9 @@ public class UserController {
 
     @Operation(summary = "Get user by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User found",
+        @ApiResponse(responseCode = "200", description = "User found",
                     content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "404", description = "User not found",
+        @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @GetMapping(ID)
@@ -79,11 +79,11 @@ public class UserController {
 
     @Operation(summary = "Update user by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated",
+        @ApiResponse(responseCode = "200", description = "User updated",
                     content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "422", description = "Cannot update user with this data",
+        @ApiResponse(responseCode = "422", description = "Cannot update user with this data",
                     content = @Content(schema = @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "404", description = "User not found",
+        @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @PutMapping(ID)
@@ -94,9 +94,9 @@ public class UserController {
 
     @Operation(summary = "Delete user by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User deleted",
+        @ApiResponse(responseCode = "200", description = "User deleted",
                     content = @Content(schema =  @Schema(implementation = User.class))),
-            @ApiResponse(responseCode = "404", description = "User not found",
+        @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @DeleteMapping(ID)
