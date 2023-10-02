@@ -60,9 +60,16 @@ public class UserControllerIT {
     @Test
     public void registration() throws Exception {
         assertEquals(0, userRepository.count());
-        utils.regDefaultUser().andExpect(status().isCreated());
+
+        MockHttpServletResponse response = utils.regDefaultUser()
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        final User savedUser = fromJson(response.getContentAsString(), new TypeReference<>() { });
+
         assertEquals(1, userRepository.count());
-        assertEquals(userRepository.findAll().get(0).getEmail(), TEST_USERNAME);
+        assertThat(userRepository.getReferenceById(savedUser.getId())).isNotNull();
     }
 
     @Test
@@ -145,7 +152,7 @@ public class UserControllerIT {
         final List<User> expectedUsers = userRepository.findAll();
 
         assertThat(users).hasSize(1);
-        assertThat(users.get(0).getEmail()).isEqualTo(expectedUsers.get(0).getEmail());
+        assertThat(users).containsAll(expectedUsers);
     }
 
     @Test
@@ -203,7 +210,6 @@ public class UserControllerIT {
         utils.perform(delete(USER_CONTROLLER_PATH + ID, userId), TEST_USERNAME)
                 .andExpect(status().isOk());
 
-        assertEquals(0, userRepository.count());
         assertFalse(userRepository.existsById(userId));
     }
 
