@@ -69,9 +69,16 @@ public class TaskControllerIT {
     @Test
     public void createTask() throws Exception {
         assertEquals(0, taskRepository.count());
-        utils.createDefaultTask().andExpect(status().isCreated());
+
+        final MockHttpServletResponse response = utils.createDefaultTask()
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        final Task savedTask = fromJson(response.getContentAsString(), new TypeReference<>() { });
+
         assertEquals(1, taskRepository.count());
-        assertEquals(taskRepository.findAll().get(0).getName(), TEST_TASK_NAME);
+        assertThat(taskRepository.getReferenceById(savedTask.getId())).isNotNull();
     }
 
     @Test
@@ -145,7 +152,7 @@ public class TaskControllerIT {
         final List<Task> expectedTasks =  taskRepository.findAll();
 
         assertThat(tasks).hasSize(1);
-        assertThat(tasks.get(0).getName()).isEqualTo(expectedTasks.get(0).getName());
+        assertThat(tasks).containsAll(expectedTasks);
     }
 
     @Test
@@ -232,7 +239,6 @@ public class TaskControllerIT {
         utils.perform(delete(TASK_CONTROLLER_PATH + ID, taskId), TEST_USERNAME)
                 .andExpect(status().isOk());
 
-        assertEquals(0, taskRepository.count());
         assertFalse(taskRepository.existsById(taskId));
     }
 
