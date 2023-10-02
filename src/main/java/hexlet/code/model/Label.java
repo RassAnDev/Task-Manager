@@ -18,6 +18,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -43,5 +44,24 @@ public class Label {
 
     public Label(final Long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Label label = (Label) o;
+        return Objects.equals(id, label.id)
+                && Objects.equals(name, label.name)
+                && Objects.equals(createdAt, label.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, createdAt);
     }
 }
