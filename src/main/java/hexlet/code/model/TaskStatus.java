@@ -12,13 +12,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -27,6 +27,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @Table(name = "task_statuses")
+@EqualsAndHashCode
 public class TaskStatus {
 
     @Id
@@ -44,24 +45,5 @@ public class TaskStatus {
 
     public TaskStatus(final Long id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TaskStatus that = (TaskStatus) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(createdAt, that.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, createdAt);
     }
 }
