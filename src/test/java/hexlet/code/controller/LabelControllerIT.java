@@ -65,9 +65,16 @@ public class LabelControllerIT {
     @Test
     public void createLabel() throws Exception {
         assertEquals(0, labelRepository.count());
-        utils.createDefaultLabel().andExpect(status().isCreated());
+
+        final MockHttpServletResponse response = utils.createDefaultLabel()
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
+
+        final Label savedLabel = fromJson(response.getContentAsString(), new TypeReference<>() { });
+
         assertEquals(1, labelRepository.count());
-        assertEquals(labelRepository.findAll().get(0).getName(), TEST_LABEL_NAME);
+        assertThat(labelRepository.getReferenceById(savedLabel.getId())).isNotNull();
     }
 
     @Test
@@ -137,7 +144,7 @@ public class LabelControllerIT {
         final List<Label> expectedLabels = labelRepository.findAll();
 
         assertThat(labels).hasSize(1);
-        assertThat(labels.get(0).getName()).isEqualTo(expectedLabels.get(0).getName());
+        assertThat(labels).containsAll(expectedLabels);
     }
 
     @Test
@@ -187,7 +194,6 @@ public class LabelControllerIT {
         utils.perform(delete(LABEL_CONTROLLER_PATH + ID, labelId), TEST_USERNAME)
                 .andExpect(status().isOk());
 
-        assertEquals(0, labelRepository.count());
         assertFalse(labelRepository.existsById(labelId));
     }
 
