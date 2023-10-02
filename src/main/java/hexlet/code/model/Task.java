@@ -16,13 +16,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -32,17 +32,21 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Table(name = "tasks")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank
     @Column(unique = true)
     @Size(min = 1, message = "Название задачи должно быть не менее 1 символа")
+    @EqualsAndHashCode.Include
     private String name;
 
+    @EqualsAndHashCode.Include
     private String description;
 
     @NotNull
@@ -65,25 +69,5 @@ public class Task {
 
     public Task(final Long id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Task task = (Task) o;
-        return Objects.equals(id, task.id)
-                && Objects.equals(name, task.name)
-                && Objects.equals(description, task.description)
-                && Objects.equals(createdAt, task.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, createdAt);
     }
 }
