@@ -23,7 +23,6 @@ public class TaskDto {
     @NotNull
     private Long taskStatusId;
 
-    @NotNull
     private Long authorId;
 
     private Long executorId;
