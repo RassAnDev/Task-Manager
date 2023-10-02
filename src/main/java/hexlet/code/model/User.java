@@ -14,13 +14,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -28,23 +28,28 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank
     @Column(unique = true)
     @Email
+    @EqualsAndHashCode.Include
     private String email;
 
     @NotBlank
     @Size(min = 1, message = "Имя должно быть не менее 1 символа")
+    @EqualsAndHashCode.Include
     private String firstName;
 
     @NotBlank
     @Size(min = 1, message = "Фамилия должна быть не менее 1 символа")
+    @EqualsAndHashCode.Include
     private String lastName;
 
     @JsonIgnore
@@ -54,30 +59,10 @@ public class User {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
+    @EqualsAndHashCode.Include
     private Date createdAt;
 
     public User(final Long id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(id, user.id)
-                && Objects.equals(email, user.email)
-                && Objects.equals(firstName, user.firstName)
-                && Objects.equals(lastName, user.lastName)
-                && Objects.equals(createdAt, user.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, createdAt);
     }
 }
