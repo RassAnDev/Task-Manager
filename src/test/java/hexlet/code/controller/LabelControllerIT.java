@@ -100,7 +100,7 @@ public class LabelControllerIT {
     public void getLabelById() throws Exception {
         utils.createDefaultLabel();
 
-        final Label expectedLabel = labelRepository.findAll().get(0);
+        final Label expectedLabel = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow();
         final MockHttpServletResponse response = utils.perform(
                 get(LABEL_CONTROLLER_PATH + ID, expectedLabel.getId()),
                 TEST_USERNAME
@@ -119,7 +119,7 @@ public class LabelControllerIT {
     public void getLabelByIdFail() throws Exception {
         utils.createDefaultLabel();
 
-        final Label expectedLabel = labelRepository.findAll().get(0);
+        final Label expectedLabel = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow();
 
         utils.perform(
                 get(LABEL_CONTROLLER_PATH + ID, expectedLabel.getId() + 1),
@@ -151,7 +151,7 @@ public class LabelControllerIT {
     public void updateLabel() throws Exception {
         utils.createDefaultLabel();
 
-        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).get().getId();
+        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow().getId();
         final LabelDto labelDtoForUpdate = new LabelDto(TEST_LABEL_NAME_2);
 
         final MockHttpServletRequestBuilder updateRequest = put(
@@ -162,7 +162,7 @@ public class LabelControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        final Label expectedLabel = labelRepository.findAll().get(0);
+        final Label expectedLabel = labelRepository.findById(labelId).orElseThrow();
 
         assertEquals(expectedLabel.getId(), labelId);
         assertNotEquals(expectedLabel.getName(), TEST_LABEL_NAME);
@@ -173,7 +173,7 @@ public class LabelControllerIT {
     public void updateLabelFail() throws Exception {
         utils.createDefaultLabel();
 
-        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).get().getId();
+        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow().getId();
         final LabelDto labelDtoForUpdate = new LabelDto("");
 
         final MockHttpServletRequestBuilder updateRequest = put(
@@ -189,7 +189,7 @@ public class LabelControllerIT {
     public void deleteLabel() throws Exception {
         utils.createDefaultLabel();
 
-        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).get().getId();
+        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow().getId();
 
         utils.perform(delete(LABEL_CONTROLLER_PATH + ID, labelId), TEST_USERNAME)
                 .andExpect(status().isOk());
@@ -201,7 +201,7 @@ public class LabelControllerIT {
     public void deleteLabelFail() throws Exception {
         utils.createDefaultLabel();
 
-        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).get().getId();
+        final Long labelId = labelRepository.findByName(TEST_LABEL_NAME).orElseThrow().getId();
 
         utils.perform(delete(LABEL_CONTROLLER_PATH + ID, labelId))
                 .andExpect(status().isForbidden());
