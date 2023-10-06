@@ -104,7 +104,7 @@ public class TaskControllerIT {
     public void getTaskById() throws Exception {
         utils.createDefaultTask();
 
-        final Task expectedTask = taskRepository.findAll().get(0);
+        final Task expectedTask = taskRepository.findByName(TEST_TASK_NAME).orElseThrow();
         final MockHttpServletResponse response = utils.perform(
                 get(TASK_CONTROLLER_PATH + ID, expectedTask.getId()),
                 TEST_USERNAME
@@ -127,7 +127,7 @@ public class TaskControllerIT {
     public void getTaskByIdFail() throws Exception {
         utils.createDefaultTask();
 
-        final Task expectedTask = taskRepository.findAll().get(0);
+        final Task expectedTask = taskRepository.findByName(TEST_TASK_NAME).orElseThrow();
 
         utils.perform(
                 get(TASK_CONTROLLER_PATH + ID, expectedTask.getId() + 1),
@@ -159,8 +159,8 @@ public class TaskControllerIT {
     public void getSortedAllTasks() throws Exception {
         utils.createDefaultTask();
 
-        final Task expectedTask = taskRepository.findAll().get(0);
-        final Long expectedLabelId = expectedTask.getLabels().stream().findFirst().get().getId();
+        final Task expectedTask = taskRepository.findByName(TEST_TASK_NAME).orElseThrow();
+        final Long expectedLabelId = expectedTask.getLabels().stream().findFirst().orElseThrow().getId();
 
         final String queryString = String.format("?taskStatus=%d&executorId=%d&authorId=%d&labelsId=%d",
                 expectedTask.getTaskStatus().getId(),
@@ -179,7 +179,7 @@ public class TaskControllerIT {
         final List<Task> tasks = fromJson(response.getContentAsString(), new TypeReference<>() { });
 
         final Task currentTask = tasks.get(0);
-        final Long currentLabelId = currentTask.getLabels().stream().findFirst().get().getId();
+        final Long currentLabelId = currentTask.getLabels().stream().findFirst().orElseThrow().getId();
 
         assertThat(tasks).hasSize(1);
         assertEquals(expectedTask.getName(), currentTask.getName());
@@ -193,8 +193,8 @@ public class TaskControllerIT {
     public void updateTask() throws Exception {
         utils.createDefaultTask();
 
-        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).get().getId();
-        final Task currentTask = taskRepository.findAll().get(0);
+        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).orElseThrow().getId();
+        final Task currentTask = taskRepository.findByName(TEST_TASK_NAME).orElseThrow();
         final TaskDto taskDtoForUpdate = buildTaskDtoForUpdate(currentTask);
 
         final MockHttpServletRequestBuilder updateRequest = put(
@@ -205,7 +205,7 @@ public class TaskControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        final Task expectedTask = taskRepository.findAll().get(0);
+        final Task expectedTask = taskRepository.findById(taskId).orElseThrow();
 
         assertEquals(expectedTask.getId(), taskId);
         assertNotEquals(expectedTask.getName(), TEST_TASK_NAME);
@@ -216,8 +216,8 @@ public class TaskControllerIT {
     public void updateTaskFail() throws Exception {
         utils.createDefaultTask();
 
-        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).get().getId();
-        final Task currentTask = taskRepository.findAll().get(0);
+        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).orElseThrow().getId();
+        final Task currentTask = taskRepository.findByName(TEST_TASK_NAME).orElseThrow();
         final TaskDto taskDtoForUpdate = buildTaskDtoForUpdate(currentTask);
         taskDtoForUpdate.setName("");
 
@@ -234,7 +234,7 @@ public class TaskControllerIT {
     public void deleteTaskByOwner() throws Exception {
         utils.createDefaultTask();
 
-        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).get().getId();
+        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).orElseThrow().getId();
 
         utils.perform(delete(TASK_CONTROLLER_PATH + ID, taskId), TEST_USERNAME)
                 .andExpect(status().isOk());
@@ -246,7 +246,7 @@ public class TaskControllerIT {
     public void deleteTaskByNotOwner() throws Exception {
         utils.createDefaultTask();
 
-        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).get().getId();
+        final Long taskId = taskRepository.findByName(TEST_TASK_NAME).orElseThrow().getId();
 
         utils.perform(delete(TASK_CONTROLLER_PATH + ID, taskId), TEST_USERNAME_2)
                 .andExpect(status().isForbidden());
@@ -255,7 +255,7 @@ public class TaskControllerIT {
     private static TaskDto buildTaskDtoForUpdate(Task task) {
         final String updatedTaskName = "relax";
         final String updatedTaskDescription = "need to find a place to sleep";
-        final Label label = task.getLabels().stream().findFirst().get();
+        final Label label = task.getLabels().stream().findFirst().orElseThrow();
 
         final TaskDto taskDtoForUpdate = new TaskDto();
         taskDtoForUpdate.setName(updatedTaskName);
