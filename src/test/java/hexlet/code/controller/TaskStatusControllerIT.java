@@ -99,7 +99,7 @@ public class TaskStatusControllerIT {
     public void getTaskStatusById() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
+        final TaskStatus expectedTaskStatus = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow();
         final MockHttpServletResponse response = utils.perform(
                 get(TASK_STATUS_CONTROLLER_PATH + ID, expectedTaskStatus.getId()),
                 TEST_USERNAME
@@ -118,7 +118,7 @@ public class TaskStatusControllerIT {
     public void getTaskStatusByIdFail() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
+        final TaskStatus expectedTaskStatus = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow();
 
         utils.perform(
                 get(TASK_STATUS_CONTROLLER_PATH + ID, expectedTaskStatus.getId() + 1),
@@ -150,7 +150,7 @@ public class TaskStatusControllerIT {
     public void updateTaskStatus() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
+        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow().getId();
 
         final TaskStatusDto taskStatusDtoForUpdate = new TaskStatusDto("took an order");
 
@@ -162,7 +162,7 @@ public class TaskStatusControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        final TaskStatus expectedTaskStatus = taskStatusRepository.findAll().get(0);
+        final TaskStatus expectedTaskStatus = taskStatusRepository.findById(taskStatusId).orElseThrow();
 
         assertEquals(expectedTaskStatus.getId(), taskStatusId);
         assertNotEquals(expectedTaskStatus.getName(), TEST_TASK_STATUS_NAME);
@@ -173,7 +173,7 @@ public class TaskStatusControllerIT {
     public void updateTaskStatusFail() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
+        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow().getId();
 
         final TaskStatusDto taskStatusDtoForUpdate = new TaskStatusDto("");
 
@@ -190,7 +190,7 @@ public class TaskStatusControllerIT {
     public void deleteTaskStatus() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
+        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow().getId();
 
         utils.perform(delete(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusId), TEST_USERNAME)
                 .andExpect(status().isOk());
@@ -202,7 +202,7 @@ public class TaskStatusControllerIT {
     public void deleteTaskStatusFail() throws Exception {
         utils.createDefaultTaskStatus();
 
-        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).get().getId();
+        final Long taskStatusId = taskStatusRepository.findByName(TEST_TASK_STATUS_NAME).orElseThrow().getId();
 
         utils.perform(delete(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusId))
                 .andExpect(status().isForbidden());
