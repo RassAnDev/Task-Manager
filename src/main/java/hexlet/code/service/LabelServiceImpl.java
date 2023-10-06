@@ -31,14 +31,14 @@ public class LabelServiceImpl implements LabelService {
     }
 
     public Label updateLabel(final Long id, final LabelDto labelDto) {
-        final Label labelForUpdate = labelRepository.findById(id).get();
+        final Label labelForUpdate = labelRepository.findById(id).orElseThrow();
         labelForUpdate.setName(labelDto.getName());
 
         return labelRepository.save(labelForUpdate);
     }
 
     public void deleteLabel(final Long id) {
-        final Label labelForDelete = labelRepository.findById(id).get();
+        final Label labelForDelete = labelRepository.findById(id).orElseThrow();
 
         labelRepository.delete(labelForDelete);
     }
