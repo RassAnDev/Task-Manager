@@ -31,7 +31,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     }
 
     public TaskStatus updateTaskStatus(final Long id, final TaskStatusDto taskStatusDto) {
-        final TaskStatus taskStatusForUpdate = taskStatusRepository.findById(id).get();
+        final TaskStatus taskStatusForUpdate = taskStatusRepository.findById(id).orElseThrow();
         taskStatusForUpdate.setName(taskStatusDto.getName());
 
         return taskStatusRepository.save(taskStatusForUpdate);
