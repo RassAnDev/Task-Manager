@@ -111,7 +111,7 @@ public class UserControllerIT {
     @Test
     public void getUserById() throws Exception {
         utils.regDefaultUser();
-        final User expectedUser = userRepository.findAll().get(0);
+        final User expectedUser = userRepository.findByEmail(TEST_USERNAME).orElseThrow();
         final MockHttpServletResponse response = utils.perform(
                 get(USER_CONTROLLER_PATH + ID, expectedUser.getId()),
                 expectedUser.getEmail()
@@ -131,7 +131,7 @@ public class UserControllerIT {
     @Test
     public void getUserByIdFail() throws Exception {
         utils.regDefaultUser();
-        final User expectedUser = userRepository.findAll().get(0);
+        final User expectedUser = userRepository.findByEmail(TEST_USERNAME).orElseThrow();
 
         utils.perform(
                get(USER_CONTROLLER_PATH + ID, expectedUser.getId() + 1),
@@ -159,7 +159,7 @@ public class UserControllerIT {
     public void updateUser() throws Exception {
         utils.regDefaultUser();
 
-        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).orElseThrow().getId();
 
         final UserDto userDto = new UserDto(
                 TEST_USERNAME_2,
@@ -174,7 +174,7 @@ public class UserControllerIT {
 
         utils.perform(updateRequest, TEST_USERNAME).andExpect(status().isOk());
 
-        final User expectedUser = userRepository.findAll().get(0);
+        final User expectedUser = userRepository.findById(userId).orElseThrow();
 
         assertEquals(expectedUser.getId(), userId);
         assertNotEquals(expectedUser.getEmail(), TEST_USERNAME);
@@ -185,7 +185,7 @@ public class UserControllerIT {
     public void updateUserFail() throws Exception {
         utils.regDefaultUser();
 
-        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).orElseThrow().getId();
 
         final UserDto userDto = new UserDto(
                 TEST_USERNAME_2,
@@ -205,7 +205,7 @@ public class UserControllerIT {
     public void deleteUser() throws Exception {
         utils.regDefaultUser();
 
-        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).orElseThrow().getId();
 
         utils.perform(delete(USER_CONTROLLER_PATH + ID, userId), TEST_USERNAME)
                 .andExpect(status().isOk());
@@ -217,7 +217,7 @@ public class UserControllerIT {
     public void deleteUserFail() throws Exception {
         utils.regDefaultUser();
 
-        final Long userId = userRepository.findByEmail(TEST_USERNAME).get().getId();
+        final Long userId = userRepository.findByEmail(TEST_USERNAME).orElseThrow().getId();
 
         utils.perform(delete(USER_CONTROLLER_PATH + ID, userId), TEST_USERNAME_2)
                 .andExpect(status().isForbidden());
