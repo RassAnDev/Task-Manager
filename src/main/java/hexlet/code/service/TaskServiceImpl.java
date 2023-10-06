@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public Task updateTask(final Long id, final TaskDto taskDto) {
-        final Task taskForUpdate = taskRepository.findById(id).get();
+        final Task taskForUpdate = taskRepository.findById(id).orElseThrow();
 
         merge(taskForUpdate, taskDto);
 
@@ -68,35 +69,30 @@ public class TaskServiceImpl implements TaskService {
 
     private Task fromDto(final TaskDto taskDto) {
 
-        final Task task = new Task();
-
         final User author = userService.getCurrentUser();
 
-        final Long executorId = taskDto.getExecutorId();
+        final User executor = Optional.ofNullable(taskDto.getExecutorId())
+                .map(userService::getUserById)
+                .orElse(null);
 
-        final TaskStatus taskStatus = taskStatusService.getTaskStatusById(taskDto.getTaskStatusId());
+        final TaskStatus taskStatus = Optional.ofNullable(taskDto.getTaskStatusId())
+                .map(taskStatusService::getTaskStatusById)
+                .orElse(null);
 
-        final Set<Long> labelIds = taskDto.getLabelIds().stream()
+        final Set<Label> labels = Optional.ofNullable(taskDto.getLabelIds())
+                .orElse(Set.of())
+                .stream()
                 .filter(Objects::nonNull)
+                .map(labelService::getLabelById)
                 .collect(Collectors.toSet());
 
-        task.setName(taskDto.getName());
-        task.setDescription(taskDto.getDescription());
-        task.setAuthor(author);
-        task.setTaskStatus(taskStatus);
-
-        if (executorId != null) {
-            task.setExecutor(userService.getUserById(executorId));
-        }
-
-        if (!labelIds.isEmpty()) {
-            Set<Label> labels = labelIds.stream()
-                    .map(labelService::getLabelById)
-                    .collect(Collectors.toSet());
-
-            task.setLabels(labels);
-        }
-
-        return task;
+        return Task.builder()
+                .name(taskDto.getName())
+                .description(taskDto.getDescription())
+                .author(author)
+                .executor(executor)
+                .taskStatus(taskStatus)
+                .labels(labels)
+                .build();
     }
 }
