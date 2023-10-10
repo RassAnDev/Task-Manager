@@ -1,7 +1,6 @@
 # Task Manager
 
-### Hexlet tests and linter status:
-[![Actions Status](https://github.com/RassAnDev/java-project-73/workflows/hexlet-check/badge.svg)](https://github.com/RassAnDev/java-project-73/actions)
+### Tests, linter and maintainability statuses:
 [![Java CI](https://github.com/RassAnDev/java-project-73/actions/workflows/main.yml/badge.svg)](https://github.com/RassAnDev/java-project-73/actions/workflows/main.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/54442414c25fd35773db/maintainability)](https://codeclimate.com/github/RassAnDev/java-project-73/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/54442414c25fd35773db/test_coverage)](https://codeclimate.com/github/RassAnDev/java-project-73/test_coverage)
@@ -10,7 +9,7 @@
 This application is a task management system that allows you to create tasks, change their statuses and assign executors for them, as well as set tags for convenient grouping of tasks by them.
 
 ## Requirements:
-Before using this application you must install and configure:
+Before using this application, you must install and configure:
 * JDK 20;
 * Gradle 8.2
 * Node.js 16.13.1
