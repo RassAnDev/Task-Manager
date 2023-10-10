@@ -186,7 +186,7 @@ const App = () => {
       </div>
       <footer>
         <div className="container my-5 pt-4 border-top">
-          <a rel="noreferrer" href="https://ru.hexlet.io">Hexlet</a>
+          <a rel="noreferrer" href="https://github.com/RassAnDev">Created by RassAnDev</a>
         </div>
       </footer>
     </>
